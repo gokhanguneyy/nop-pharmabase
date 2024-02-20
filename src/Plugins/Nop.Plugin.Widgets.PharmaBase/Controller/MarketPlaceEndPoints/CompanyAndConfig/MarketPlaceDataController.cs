@@ -44,29 +44,68 @@ namespace Nop.Plugin.Widgets.PharmaBase.Controller.MarketPlaceEndPoints.CompanyA
                     UserName = signUpModel.Result.UserName,
                     Password = signUpModel.Result.Password
                 };
+                var deneme = await GetCompanyIdByUserNamePassword(item.UserName, item.Password, baseUrl);
 
-                var url = $"{baseUrl}api/v1/company/sign-up";
-                //var url = "https://localhost:44309/api/v1/company/sign-up";
-                var json = JsonConvert.SerializeObject(item);
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(url, data);
-                var content = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
+                if(deneme.Value == false)
+                {
+                    var url = $"{baseUrl}api/v1/company/sign-up";
+                    //var url = "https://localhost:44309/api/v1/company/sign-up";
+                    var json = JsonConvert.SerializeObject(item);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await _httpClient.PostAsync(url, data);
+                    var content = await response.Content.ReadAsStringAsync();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        sign.Authenticate();
+
+                        var pharmaBaseSettingss = await _settingService.LoadSettingAsync<PharmaBaseSettings>(store.Id);
+                        var baseUrl2 = pharmaBaseSettingss.Url;
+                        var configurePageData = await SendConfigData();
+                        var urlForConfig = $"{baseUrl2}api/v1/company/config";
+                        //var urlForConfig = "https://localhost:44309/api/v1/company/config";
+                        foreach (var jsonData in configurePageData)
+                        {
+                            var jsonOfConfig = JsonConvert.SerializeObject(jsonData);
+                            var dataOfConfig = new StringContent(jsonOfConfig, Encoding.UTF8, "application/json");
+                            try
+                            {
+                                var responseOfConfig = await _httpClient.PostAsync(urlForConfig, dataOfConfig);
+                                var contentOfConfig = await responseOfConfig.Content.ReadAsStringAsync();
+                                if (responseOfConfig.IsSuccessStatusCode)
+                                {
+                                    _result = contentOfConfig;
+                                }
+                                else
+                                {
+                                    return StatusCode((int)responseOfConfig.StatusCode, contentOfConfig);
+                                }
+                            }
+                            catch (Exception)
+                            {
+
+                                return StatusCode(500, "InternalServerError for Config");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return StatusCode((int)response.StatusCode, content);
+                    }
+
+                   
+                }
+                else if(deneme.Value == true)
                 {
                     sign.Authenticate();
-
-                    var pharmaBaseSettingss = await _settingService.LoadSettingAsync<PharmaBaseSettings>(store.Id);
-                    var baseUrl2 = pharmaBaseSettingss.Url;
-                    var configurePageData = await SendConfigData();
-                    var urlForConfig = $"{baseUrl2}api/v1/company/config";
-                    //var urlForConfig = "https://localhost:44309/api/v1/company/config";
-                    foreach (var jsonData in configurePageData)
+                    var configurePageUpdateData = await SendConfigData();
+                    var url = $"{baseUrl}api/v1/company/config";
+                    foreach (var jsonData in configurePageUpdateData)
                     {
                         var jsonOfConfig = JsonConvert.SerializeObject(jsonData);
                         var dataOfConfig = new StringContent(jsonOfConfig, Encoding.UTF8, "application/json");
                         try
                         {
-                            var responseOfConfig = await _httpClient.PostAsync(urlForConfig, dataOfConfig);
+                            var responseOfConfig = await _httpClient.PutAsync(url, dataOfConfig);
                             var contentOfConfig = await responseOfConfig.Content.ReadAsStringAsync();
                             if (responseOfConfig.IsSuccessStatusCode)
                             {
@@ -74,7 +113,7 @@ namespace Nop.Plugin.Widgets.PharmaBase.Controller.MarketPlaceEndPoints.CompanyA
                             }
                             else
                             {
-                                return StatusCode((int)response.StatusCode, content);
+                                return StatusCode((int)responseOfConfig.StatusCode, contentOfConfig);
                             }
                         }
                         catch (Exception)
@@ -83,11 +122,16 @@ namespace Nop.Plugin.Widgets.PharmaBase.Controller.MarketPlaceEndPoints.CompanyA
                             return StatusCode(500, "InternalServerError for Config");
                         }
                     }
+
+
+                    return BadRequest(_result);
                 }
                 else
                 {
-                    return StatusCode((int)response.StatusCode, content);
+                    return StatusCode(500, "InternalServerError for Config");
                 }
+
+
 
                 return Ok(_result);
             }
@@ -95,6 +139,25 @@ namespace Nop.Plugin.Widgets.PharmaBase.Controller.MarketPlaceEndPoints.CompanyA
             {
                 return StatusCode(500, "InternalServerError for Company");
             }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<bool>> GetCompanyIdByUserNamePassword(string userName, string password, string baseUrl)
+        {
+            var url = $"{baseUrl}api/v1/company/sign-up/{userName}/{password}";
+            bool result;
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                result= bool.Parse(responseBody);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return result;
         }
 
         public async Task<MarketPlaceModel[]> SendConfigData()
@@ -133,6 +196,10 @@ namespace Nop.Plugin.Widgets.PharmaBase.Controller.MarketPlaceEndPoints.CompanyA
 
             return data;
         }
+
+
+       
+
         [HttpPost]
         public virtual async Task<IActionResult> OrderList()
         {
