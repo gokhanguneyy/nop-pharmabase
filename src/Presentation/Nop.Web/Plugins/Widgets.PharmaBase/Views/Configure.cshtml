@@ -1,0 +1,371 @@
+﻿@model Nop.Plugin.Widgets.PharmaBase.Models.ConfigurationModel
+
+@{
+    Layout = "_ConfigurePlugin";
+
+    NopHtml.AppendCssFileParts("~/Plugins/Widgets.PharmaBase/Content/configure.css");
+
+    NopHtml.AppendScriptParts(ResourceLocation.Footer, "~/Plugins/Widgets.PharmaBase/Content/js/configure.js");
+}
+
+@await Component.InvokeAsync("StoreScopeConfiguration")
+<form asp-controller="WidgetsPharmaBase" asp-action="Configure" method="post">
+    <section class="content">
+        <div class="container-fluid">
+            <div class="cards-group">
+                <div class="card card-default">
+                    <div class="card-header">
+                        URL
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="Urls_OverrideForStore" asp-input="Urls" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="Urls" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="Urls" />
+                                <span asp-validation-for="Urls"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-default">
+                    <div class="card-header">
+                        @T("Plugins.Widgets.PharmaBase.Trendyol")
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="trendyolDeveloperUserNames_OverrideForStore" asp-input="trendyolDeveloperUserNames" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="trendyolDeveloperUserNames" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="trendyolDeveloperUserNames" />
+                                <span asp-validation-for="trendyolDeveloperUserNames"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="trendyolPasswords_OverrideForStroe" asp-input="trendyolPasswords" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="trendyolPasswords" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="trendyolPasswords" />
+                                <span asp-validation-for="trendyolPasswords"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="trendyolSupplierIds_OverrideForStore" asp-input="trendyolSupplierIds" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="trendyolSupplierIds" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="trendyolSupplierIds" />
+                                <span asp-validation-for="trendyolSupplierIds"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-label asp-for="ParentCategoryId" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="ParentCategoryId" asp-items="Model.AvailableCategories" />
+                                <span asp-validation-for="ParentCategoryId"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                               <label class="float-right">Trendyol Kategori</label>
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select onchange="getAttributes()" asp-for="TrendYolCategoryId" asp-items="Model.AvailableTrendyolCategories" />
+                                <span asp-validation-for="TrendYolCategoryId"></span>
+                            </div>
+                        </div>
+
+                        @* NOP ATTRIBUTES VALUES *@
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label class="float-right">Nop Attr</label>
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="ProductAttributeId" asp-items="Model.AvailableProductAttributes" onchange="getNopAttributeValues()" />
+                                <span asp-validation-for="ProductAttributeId"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row" id="TrendYolAttributes">
+                            <div class="col-md-3">
+                                <label class="float-right">Trendyol Attr</label>
+                            </div>
+                            <div class="col-md-9">
+                                <select id="AttributesOfCategory" onchange="getCategoryAttributeValues()"></select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row" id="NopAttributesValues">
+                            <div class="col-md-3">
+                                <label class="float-right">Nop Attr Value</label>
+                            </div>
+                            <div class="col-md-9">
+                                <select id="AttributeValuesOfNopDefault"></select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row" id="TrendYolAttributeValues">
+                            <div class="col-md-3">
+                                <label class="float-right">Trendyol Values</label>
+                            </div>
+                            <div class="col-md-9">
+                                <select id="ValuesOfCategoryAttribute"></select>
+                            </div>
+                        </div>
+
+                      
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-9 offset-md-3">
+                                    <button type="button" class="save-button" onclick="sendCategory()">Kategorileri Gönder</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label class="float-right">Trendyol Marka</label>
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="TrendYolBrandId" asp-items="Model.AvailableTrendyolBrands" />
+                                <span asp-validation-for="TrendYolBrandId"></span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <label class="float-right">Nop Marka</label>
+                            </div>
+                            <div class="col-md-9">
+                                <nop-select asp-for="BrandId" asp-items="Model.AvailableManufacturers" />
+                                <span asp-validation-for="BrandId"></span>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-9 offset-md-3">
+                                    <button type="button" class="save-button" onclick="sendBrand()">Markaları Gönder</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-9 offset-md-3">
+                                    <button type="button" class="save-button" onclick="sendAttributeAndValues()">Attr & Attr Value Gönder</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header">
+                        @T("Plugins.Widgets.PharmaBase.Hepsiburada")
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="hepsiburadaDeveloperUserNames_OverrideForStore" asp-input="hepsiburadaDeveloperUserNames" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="hepsiburadaDeveloperUserNames" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="hepsiburadaDeveloperUserNames" />
+                                <span asp-validation-for="hepsiburadaDeveloperUserNames"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="hepsiburadaPasswords_OverrideForStroe" asp-input="hepsiburadaPasswords" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="hepsiburadaPasswords" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="hepsiburadaPasswords" />
+                                <span asp-validation-for="hepsiburadaPasswords"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="hepsiburadaSupplierIds_OverrideForStore" asp-input="hepsiburadaSupplierIds" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="hepsiburadaSupplierIds" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="hepsiburadaSupplierIds" />
+                                <span asp-validation-for="hepsiburadaSupplierIds"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header">
+                        @T("Plugins.Widgets.PharmaBase.Amazon")
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="amazonDeveloperUserNames_OverrideForStore" asp-input="amazonDeveloperUserNames" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="amazonDeveloperUserNames" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="amazonDeveloperUserNames" />
+                                <span asp-validation-for="amazonDeveloperUserNames"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="amazonPasswords_OverrideForStroe" asp-input="amazonPasswords" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="amazonPasswords" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="amazonPasswords" />
+                                <span asp-validation-for="amazonPasswords"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-3">
+                                <nop-override-store-checkbox asp-for="amazonSupplierIds_OverrideForStore" asp-input="amazonSupplierIds" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                                <nop-label asp-for="amazonSupplierIds" />
+                            </div>
+                            <div class="col-md-9">
+                                <nop-editor asp-for="amazonSupplierIds" />
+                                <span asp-validation-for="amazonSupplierIds"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="card card-default">
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-md-9 offset-md-3">
+                                <button type="submit" name="save" class="btn btn-primary" onclick="sendMarketPlace()">@T("Admin.Common.Save")</button>
+                                @* <button id="sendMarketPlaces" type="button" class="save-button" >@T("Admin.Common.Save")</button> *@
+                                
+                                <button id="sendMarketPlaceBtn" type="button" class="save-button">
+                                    @T("Plugins.Widgets.Pharmabase.Ürünlerigönder")
+                                    <span style="font-size: 0.8em;">(@Model.message)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </section>
+</form>
+
+<script>
+    function getAttributes() {
+        var selectedCategory2 = document.getElementById("TrendYolCategoryId").value;
+        var x = parseInt(selectedCategory2);
+        $.ajax({
+            url: '@Url.Action("GetAttributes", "WidgetsPharmaBase")',
+            type: 'GET',
+            data: { categoryId: x },
+            success: function (data) {
+                var selectBox = $('#AttributesOfCategory');
+                selectBox.empty(); // Mevcut seçenekleri temizle
+                $.each(data, function (i, item) {
+                    selectBox.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text
+                    }));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log("işlem başarısızııııııı");
+            }
+        });
+
+    }
+
+    function getCategoryAttributeValues() {
+        var selectedCategoryId = document.getElementById("TrendYolCategoryId").value;
+        var x = parseInt(selectedCategoryId);
+        var selectedAttributeId = $('#AttributesOfCategory').val();
+        var y = parseInt(selectedAttributeId);
+
+        $.ajax({
+            url: '@Url.Action("GetAttributeValues", "WidgetsPharmaBase")',
+            type: 'GET',
+            data: { categoryId: x ,attributeId:y},
+            success: function (data) {
+                var selectBox = $('#ValuesOfCategoryAttribute');
+                selectBox.empty(); // Mevcut seçenekleri temizle
+                $.each(data, function (i, item) {
+                    selectBox.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text
+                    }));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log("işlem başarısızııııııı");
+            }
+        });
+
+    }
+
+
+    function getNopAttributeValues() {
+        var selectedCategoryId = document.getElementById("ProductAttributeId").value;
+        var x = parseInt(selectedCategoryId);
+
+        $.ajax({
+            url: '@Url.Action("GetNopProductAttributeValues", "WidgetsPharmaBase")',
+            type: 'GET',
+            data: { nopAttributeId: x},
+            success: function (data) {
+                var selectBox = $('#AttributeValuesOfNopDefault');
+                selectBox.empty(); // Mevcut seçenekleri temizle
+                $.each(data, function (i, item) {
+                    selectBox.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text
+                    }));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log("işlem başarısızııııııı");
+            }
+        });
+
+    }
+
+    function sendAttributeAndValues() {
+        var nopProductAttribute = document.getElementById("ProductAttributeId").value;
+        var selectedNopValueId = $('#AttributeValuesOfNopDefault').val();
+
+        var selectedTrendyolAttribute = $('#AttributesOfCategory').val();
+        var selectedTrendyolValueId = $('#ValuesOfCategoryAttribute').val();
+
+        console.log("Nop Product Attribute ID: ", nopProductAttribute);
+        console.log("Nop Value ID: ", selectedNopValueId);
+        console.log("Trendyol Attribute ID: ", selectedTrendyolAttribute);
+        console.log("Trendyol Value ID: ", selectedTrendyolValueId);
+    }
+
+    
+</script>

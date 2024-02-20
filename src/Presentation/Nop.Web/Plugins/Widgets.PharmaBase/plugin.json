@@ -1,0 +1,11 @@
+﻿{
+  "Group": "PHARMA",
+  "FriendlyName": "PharmaBase",
+  "SystemName": "Widgets.PharmaBase",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.50" ],
+  "Author": "MarketPlaceTeam",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Widgets.PharmaBase.dll",
+  "Description": "PharmaBase pluginidir."
+}

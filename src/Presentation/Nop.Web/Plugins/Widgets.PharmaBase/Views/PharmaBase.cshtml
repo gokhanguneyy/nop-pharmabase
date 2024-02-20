@@ -1,0 +1,70 @@
+﻿@using Nop.Plugin.Widgets.PharmaBase.Models.Order;
+@using Nop.Web.Framework.Models.DataTables;
+
+
+@{
+
+    var gridModel = new DataTablesModel
+            {
+                Name = "MarketplaceOrders",
+                UrlRead = new DataUrl("/MarketPlaceData/OrderList"),
+                Paging = false
+            };
+    // Filters = new List<FilterParameter>
+    //                                                     {
+    //                                     new FilterParameter(nameof(Model.OrderNumber)),
+    //                                     new FilterParameter(nameof(Model.OrderDate), typeof(DateTime?)),
+    //                                     new FilterParameter(nameof(Model.OrderNumber)),
+    //                                     new FilterParameter(nameof(Model.CargoProviderName)),
+    //                                     new FilterParameter(nameof(Model.Status)),
+    //                                     new FilterParameter(nameof(Model.CustomerFirstName)),
+    //                                     new FilterParameter(nameof(Model.CustomerLastName)),
+    //                                     new FilterParameter(nameof(Model.CustomerEmail)),
+    //                                     new FilterParameter(nameof(Model.TotalPrice)),
+    //                                 }
+    gridModel.ColumnCollection = new List<ColumnProperty>
+                                                    {
+                                    new ColumnProperty(nameof(MarketPlaceOrderDetail.OrderNumber))
+                                    {
+                                        Title = T("Admin.Orders.Fields.CustomOrderNumber").Text,
+                                        Width = "80"
+                                    }
+                                };
+    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(MarketPlaceOrderDetail.Status))
+            {
+                Title = T("Admin.Orders.Fields.OrderStatus").Text,
+                Width = "100",
+                Render = new RenderCustom("renderColumnOrderStatus")
+            });
+
+
+    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(MarketPlaceOrderDetail.CustomerFirstName))
+            {
+                Title = T("Admin.Orders.Fields.ShippingStatus").Text,
+                Width = "150"
+            });
+    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(MarketPlaceOrderDetail.CustomerLastName))
+            {
+                Title = T("Admin.Orders.Fields.ShippingStatus").Text,
+                Width = "150"
+            });
+    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(MarketPlaceOrderDetail.CustomerEmail))
+            {
+                Title = T("Admin.Orders.Fields.ShippingStatus").Text,
+                Width = "150"
+            });
+    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(MarketPlaceOrderDetail.MarketPlaceType))
+            {
+                Title = T("Admin.Orders.Fields.ShippingStatus").Text,
+                Width = "150"
+            });
+    gridModel.ColumnCollection.Add(new ColumnProperty(nameof(MarketPlaceOrderDetail.OrderDate))
+            {
+                Title = T("Admin.Orders.Fields.ShippingStatus").Text,
+                Width = "150"
+            });
+
+
+}
+
+@await Html.PartialAsync("Table", gridModel)

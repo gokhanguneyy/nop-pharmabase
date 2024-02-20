@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Widget",
+  "FriendlyName": "GetOrders",
+  "SystemName": "Widgets.GetOrders",
+  "Version": "1.0",
+  "SupportedVersions": [ "4.50" ],
+  "Author": "MarketPlaceTeam",
+  "DisplayOrder": 1,
+  "FileName": "Nop.Plugin.Widgets.GetOrders.dll",
+  "Description": "GetOrders pluginidir."
+}

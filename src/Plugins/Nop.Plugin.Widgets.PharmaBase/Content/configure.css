@@ -1,0 +1,59 @@
+﻿.save-button {
+  background-color: #3498db; /* Butonun arka plan rengi */
+  border: none;
+  color: white; /* Butonun yazı rengi */
+  padding: 10px 20px; /* İç boşluk, yükseklik ve genişlik */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px; /* Yazı boyutu */
+  margin: 4px 2px;
+  cursor: pointer; /* İmleç butonun üzerine geldiğinde şeklini değiştirir */
+  border-radius: 4px; /* Köşeleri yuvarlatır */
+  transition-duration: 0.4s; /* Arka plan rengi geçişi için süre */
+}
+
+  .save-button:hover {
+    background-color: #2874a6; /* Butonun üzerine gelindiğinde arka plan rengi */
+  }
+
+
+
+
+/* Modal (arka plan) */
+.modal {
+  display: none; /* Gizle */
+  position: fixed; /* Sabit, sayfa ile birlikte kaymaz */
+  z-index: 1; /* Diğer içeriklerin üstünde */
+  left: 0;
+  top: 0;
+  width: 100%; /* Tam genişlik */
+  height: 100%; /* Tam yükseklik */
+  overflow: auto; /* Gerekirse kaydırmayı sağla */
+  background-color: rgb(0,0,0); /* Fall-back renk */
+  background-color: rgba(0,0,0,0.4); /* Siyah w/ opacity */
+}
+
+/* Modal İçerik */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* %15 üstten ve otomatik yanlar */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* %80 genişlik */
+}
+
+/* Kapatma butonu */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
